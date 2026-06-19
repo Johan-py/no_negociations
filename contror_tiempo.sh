@@ -14,79 +14,196 @@ if [ "$USER" != "$USUARIO_PERMITIDO" ]; then
     exit 1
 fi
 
-# Función para bloquear completamente el sistema
-bloquear_sistema() {
-    echo "🔒 TIEMPO AGOTADO - Bloqueando sistema..."
+# Función ULTRA-BLOQUEO - Bloquea absolutamente todo
+bloquear_sistema_total() {
+    echo "🔒 Activando BLOQUEO TOTAL del sistema..."
     
-    # Capturar todas las señales posibles
-    trap '' SIGINT SIGTERM SIGHUP SIGQUIT SIGTSTP SIGSTOP SIGKILL
+    # 1. CERRAR TODAS LAS VENTANAS Y APLICACIONES
+    echo "  → Cerrando todas las aplicaciones..."
     
-    # Bloquear terminales virtuales
-    for tty in /dev/tty[0-9]*; do
-        sudo chmod 000 "$tty" 2>/dev/null
-    done
+    # Matar navegadores
+    pkill -9 firefox 2>/dev/null
+    pkill -9 chrome 2>/dev/null
+    pkill -9 chromium 2>/dev/null
+    pkill -9 opera 2>/dev/null
+    pkill -9 brave 2>/dev/null
     
-    # Matar procesos de terminal
+    # Matar editores y ofimática
+    pkill -9 libreoffice 2>/dev/null
+    pkill -9 soffice.bin 2>/dev/null
+    pkill -9 gedit 2>/dev/null
+    pkill -9 kate 2>/dev/null
+    pkill -9 vscode 2>/dev/null
+    pkill -9 code 2>/dev/null
+    
+    # Matar gestores de archivos
+    pkill -9 nautilus 2>/dev/null
+    pkill -9 thunar 2>/dev/null
+    pkill -9 dolphin 2>/dev/null
+    pkill -9 pcmanfm 2>/dev/null
+    
+    # Matar reproductores multimedia
+    pkill -9 vlc 2>/dev/null
+    pkill -9 mpv 2>/dev/null
+    pkill -9 totem 2>/dev/null
+    pkill -9 rhythmbox 2>/dev/null
+    
+    # Matar terminales (TODAS)
     pkill -9 gnome-terminal 2>/dev/null
     pkill -9 xterm 2>/dev/null
     pkill -9 konsole 2>/dev/null
     pkill -9 terminator 2>/dev/null
     pkill -9 xfce4-terminal 2>/dev/null
+    pkill -9 qterminal 2>/dev/null
+    pkill -9 lxterminal 2>/dev/null
+    pkill -9 mate-terminal 2>/dev/null
+    pkill -9 tilix 2>/dev/null
+    pkill -9 alacritty 2>/dev/null
+    pkill -9 kitty 2>/dev/null
     
-    # Deshabilitar teclas en X11/GNOME
+    # Matar clientes de chat/mensajería
+    pkill -9 discord 2>/dev/null
+    pkill -9 telegram 2>/dev/null
+    pkill -9 slack 2>/dev/null
+    pkill -9 skype 2>/dev/null
+    pkill -9 whatsapp 2>/dev/null
+    
+    # Matar juegos
+    pkill -9 steam 2>/dev/null
+    pkill -9 minecraft 2>/dev/null
+    
+    # Matar cualquier otra aplicación visible
+    pkill -9 gimp 2>/dev/null
+    pkill -9 inkscape 2>/dev/null
+    pkill -9 blender 2>/dev/null
+    
+    # Dar tiempo para que se cierren
+    sleep 3
+    
+    # 2. DESHABILITAR COMPLETAMENTE LOS WORKSPACES
+    echo "  → Bloqueando workspaces..."
     if command -v gsettings &> /dev/null; then
-        # Deshabilitar TODOS los atajos de teclado
+        # Deshabilitar cambio de workspace
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-2 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-3 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-4 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-5 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-6 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-7 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-8 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-9 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "[]" 2>/dev/null
+        
+        # Deshabilitar mover ventanas entre workspaces
+        gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-1 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-2 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-3 "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings move-to-workspace-4 "[]" 2>/dev/null
+        
+        # Deshabilitar TODAS las combinaciones de teclas
         gsettings list-keys org.gnome.desktop.wm.keybindings | while read key; do
             gsettings set org.gnome.desktop.wm.keybindings "$key" "[]" 2>/dev/null
         done
         
-        # Deshabilitar acceso a menú y actividades
+        # Deshabilitar todo en GNOME Shell
         gsettings set org.gnome.shell.keybindings toggle-overview "[]" 2>/dev/null
         gsettings set org.gnome.shell.keybindings toggle-application-view "[]" 2>/dev/null
         gsettings set org.gnome.shell.keybindings focus-active-notification "[]" 2>/dev/null
+        gsettings set org.gnome.shell.keybindings toggle-message-tray "[]" 2>/dev/null
+        gsettings set org.gnome.shell.keybindings screenshot "[]" 2>/dev/null
+        gsettings set org.gnome.shell.keybindings show-screenshot-ui "[]" 2>/dev/null
         
-        # Deshabilitar cambio de ventanas
-        gsettings set org.gnome.desktop.wm.keybindings switch-applications "[]" 2>/dev/null
-        gsettings set org.gnome.desktop.wm.keybindings switch-windows "[]" 2>/dev/null
+        # Deshabilitar menú de actividades
+        gsettings set org.gnome.shell.keybindings toggle-overview "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings panel-main-menu "[]" 2>/dev/null
+        gsettings set org.gnome.desktop.wm.keybindings panel-run-dialog "[]" 2>/dev/null
     fi
     
-    # Deshabilitar Alt+F2 y otras combinaciones
-    if command -v dconf &> /dev/null; then
-        dconf write /org/gnome/desktop/wm/keybindings/panel-run-dialog "['']" 2>/dev/null
-    fi
+    # 3. DESHABILITAR TERMINALES VIRTUALES (Ctrl+Alt+F1-F7)
+    echo "  → Bloqueando terminales virtuales..."
+    for i in {1..12}; do
+        if [ -e "/dev/tty$i" ]; then
+            sudo chmod 000 "/dev/tty$i" 2>/dev/null
+        fi
+    done
     
-    # Bloquear Ctrl+Alt+Supr (si existe)
-    if [ -f /etc/systemd/system/ctrl-alt-del.target ]; then
-        sudo systemctl mask ctrl-alt-del.target 2>/dev/null
-    fi
+    # 4. DESHABILITAR TODAS LAS SEÑALES DE TECLADO
+    echo "  → Capturando señales del sistema..."
+    trap '' SIGINT SIGTERM SIGHUP SIGQUIT SIGTSTP SIGSTOP SIGKILL SIGUSR1 SIGUSR2
     
-    # Deshabilitar interrupciones en terminal
+    # 5. DESHABILITAR ENTRADAS DE TECLADO A BAJO NIVEL
+    echo "  → Bloqueando entrada de teclado..."
     stty intr "" 2>/dev/null
     stty quit "" 2>/dev/null
     stty susp "" 2>/dev/null
     stty stop "" 2>/dev/null
     stty start "" 2>/dev/null
+    stty eof "" 2>/dev/null
+    stty erase "" 2>/dev/null
+    stty kill "" 2>/dev/null
     
-    # Bloquear el directorio temporal
+    # 6. BLOQUEAR DIRECTORIOS TEMPORALES
     sudo chmod 000 /tmp 2>/dev/null
     sudo chmod 000 /var/tmp 2>/dev/null
+    
+    # 7. MATAR PROCESOS DEL GESTOR DE VENTANAS (CUIDADO - Esto puede reiniciar X)
+    # Solo matamos componentes que no sean críticos
+    pkill -9 gnome-shell-extension 2>/dev/null
+    pkill -9 xdg-desktop-portal 2>/dev/null
+    
+    # 8. DESHABILITAR ALT+F4, ALT+TAB, etc.
+    if command -v dconf &> /dev/null; then
+        dconf write /org/gnome/desktop/wm/keybindings/close "['']" 2>/dev/null
+        dconf write /org/gnome/desktop/wm/keybindings/switch-applications "['']" 2>/dev/null
+        dconf write /org/gnome/desktop/wm/keybindings/switch-windows "['']" 2>/dev/null
+        dconf write /org/gnome/desktop/wm/keybindings/switch-group "['']" 2>/dev/null
+    fi
+    
+    echo "✅ Sistema completamente bloqueado"
 }
 
-# Función para reproducir video aleatorio
-reproducir_video_final() {
+# Función para video en pantalla completa SIN ESCAPE
+reproducir_video_bloqueante() {
+    echo "🎬 Iniciando video de cierre en MODO BLOQUEO TOTAL..."
+    
+    # Matar cualquier instancia previa
+    pkill -9 vlc 2>/dev/null
+    pkill -9 mpv 2>/dev/null
+    
     if [ -d "$CARPETA_VIDEOS" ] && [ "$(ls -A $CARPETA_VIDEOS 2>/dev/null)" ]; then
-        # Seleccionar video aleatorio
         VIDEO=$(find "$CARPETA_VIDEOS" -type f \( -name "*.mp4" -o -name "*.avi" -o -name "*.mkv" -o -name "*.webm" -o -name "*.mov" \) 2>/dev/null | shuf -n 1)
         
         if [ -n "$VIDEO" ]; then
-            echo "🎬 Reproduciendo video de cierre..."
+            echo "  ▶ Reproduciendo: $(basename "$VIDEO")"
             
-            # Matar cualquier instancia previa
-            pkill -9 vlc 2>/dev/null
-            pkill -9 mpv 2>/dev/null
-            
-            # Intentar con VLC, si no está disponible usar mpv
-            if command -v vlc &> /dev/null; then
+            # Usar MPV con TODAS las opciones de bloqueo
+            if command -v mpv &> /dev/null; then
+                mpv --fs \
+                    --no-input-default-bindings \
+                    --no-input-cursor \
+                    --no-input-vo-keyboard \
+                    --no-input-builtin-bindings \
+                    --no-input-test \
+                    --no-terminal \
+                    --really-quiet \
+                    --no-stop-screensaver \
+                    --no-osc \
+                    --no-osd-bar \
+                    --no-window-dragging \
+                    --no-border \
+                    --no-keepaspect-window \
+                    --ontop \
+                    --loop-file=inf \
+                    --idle=no \
+                    --no-input-ipc-server \
+                    --no-input-appevent \
+                    "$VIDEO" 2>/dev/null &
+                
+                MPV_PID=$!
+                
+            # Alternativa con VLC
+            elif command -v vlc &> /dev/null; then
                 vlc --fullscreen \
                     --no-keyboard-events \
                     --no-mouse-events \
@@ -94,65 +211,54 @@ reproducir_video_final() {
                     --no-video-title-show \
                     --play-and-exit \
                     --loop \
+                    --qt-fullscreen-screennumber=1 \
+                    --qt-key-press-events=0 \
+                    --qt-mouse-events=0 \
+                    --no-qt-fs-controller \
+                    --no-qt-system-tray \
+                    --disable-screensaver \
                     "$VIDEO" 2>/dev/null &
-            elif command -v mpv &> /dev/null; then
-                mpv --fullscreen \
-                    --no-input-default-bindings \
-                    --no-terminal \
-                    --really-quiet \
-                    --loop-file=inf \
-                    "$VIDEO" 2>/dev/null &
+                    
+                VLC_PID=$!
             fi
             
-            # Dar tiempo para que el video comience
-            sleep 5
+            # Esperar a que termine (o no, está en loop)
+            sleep 10
+            return 0
         fi
-    fi
-}
-
-# Función para mostrar mensaje gráfico
-mostrar_mensaje_fin() {
-    # Intentar con zenity
-    if command -v zenity &> /dev/null; then
-        zenity --warning \
-               --text="⏰ ¡TIEMPO AGOTADO!\n\nHas alcanzado el límite diario de $((TIEMPO_LIMITE_MINUTOS / 60)) horas y $((TIEMPO_LIMITE_MINUTOS % 60)) minutos.\n\nEl sistema se apagará en 30 segundos..." \
-               --title="⚠️ Tiempo Agotado" \
-               --width=500 \
-               --timeout=30 2>/dev/null &
     fi
     
-    # También mostrar en terminal por si acaso
-    echo ""
-    echo "╔════════════════════════════════════════════════════════╗"
-    echo "║              ⚠️  ¡TIEMPO AGOTADO!  ⚠️                  ║"
-    echo "║                                                        ║"
-    echo "║  Has alcanzado el límite diario de uso.                ║"
-    echo "║  Tiempo máximo: $((TIEMPO_LIMITE_MINUTOS / 60)) horas y $((TIEMPO_LIMITE_MINUTOS % 60)) minutos               ║"
-    echo "║                                                        ║"
-    echo "║  El sistema se apagará en 30 segundos.                 ║"
-    echo "╚════════════════════════════════════════════════════════╝"
-    echo ""
+    # Si no hay video, mostrar pantalla negra
+    echo "  ⚠️ Sin videos, mostrando pantalla negra..."
+    if command -v xdg-screensaver &> /dev/null; then
+        xdg-screensaver activate 2>/dev/null
+    fi
+    
+    return 1
 }
 
-# Función para guardar estado
-guardar_estado() {
-    local minutos_usados=$1
-    echo "$FECHA_ACTUAL:$minutos_usados:$(date +%s)" > "$ARCHIVO_TIEMPO"
-    sudo chmod 644 "$ARCHIVO_TIEMPO" 2>/dev/null
-}
-
-# Función para verificar si el día cambió
-verificar_dia() {
-    if [ -f "$ARCHIVO_TIEMPO" ]; then
-        FECHA_GUARDADA=$(cut -d':' -f1 "$ARCHIVO_TIEMPO")
-        if [ "$FECHA_GUARDADA" != "$FECHA_ACTUAL" ]; then
-            # Es un nuevo día, reiniciar contador
-            echo "🌅 Nuevo día detectado. Reiniciando contador..."
-            rm -f "$ARCHIVO_TIEMPO"
-            return 1
+# Función para apantallar completamente
+pantalla_muerte() {
+    # Crear una ventana negra que cubra todo
+    if command -v xdotool &> /dev/null; then
+        # Obtener dimensiones de la pantalla
+        SCREEN_WIDTH=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d'x' -f1)
+        SCREEN_HEIGHT=$(xdpyinfo | grep dimensions | awk '{print $2}' | cut -d'x' -f2)
+        
+        # Crear ventana negra enorme
+        xdotool search --name "CiberControl-Bloqueo" windowkill 2>/dev/null
+        
+        # Usar zenity como pantalla de bloqueo si está disponible
+        if command -v zenity &> /dev/null; then
+            zenity --info \
+                   --text="<span size='xx-large' weight='bold'>⏰ TIEMPO AGOTADO</span>\n\nEl sistema se apagará en breve..." \
+                   --title="SISTEMA BLOQUEADO" \
+                   --width=$SCREEN_WIDTH \
+                   --height=$SCREEN_HEIGHT \
+                   --no-wrap \
+                   --timeout=30 2>/dev/null &
         fi
     fi
-    return 0
 }
 
 # Función principal mejorada
@@ -161,51 +267,36 @@ main() {
     if [ -f "$ARCHIVO_BLOQUEO" ]; then
         FECHA_BLOQUEO=$(cat "$ARCHIVO_BLOQUEO")
         if [ "$FECHA_BLOQUEO" == "$FECHA_ACTUAL" ]; then
-            echo "⛔ ACCESO DENEGADO: Ya has alcanzado el límite diario."
-            echo "⏰ Podrás volver a usar el sistema mañana."
-            bloquear_sistema
-            reproducir_video_final
+            echo "⛔ ACCESO DENEGADO: Límite diario alcanzado."
+            bloquear_sistema_total
+            reproducir_video_bloqueante
+            pantalla_muerte
             sleep 30
             sudo shutdown -h now
             exit 1
         else
-            # Es un nuevo día, eliminar bloqueo
             rm -f "$ARCHIVO_BLOQUEO"
         fi
     fi
     
-    # Verificar si es un nuevo día
-    verificar_dia
-    ES_NUEVO_DIA=$?
-    
-    # Inicializar o cargar tiempo usado
-    if [ ! -f "$ARCHIVO_TIEMPO" ] || [ $ES_NUEVO_DIA -eq 1 ]; then
+    # Inicializar o cargar tiempo
+    if [ ! -f "$ARCHIVO_TIEMPO" ]; then
         MINUTOS_USADOS=0
-        echo "✅ Nueva sesión iniciada. Tienes $((TIEMPO_LIMITE_MINUTOS / 60)) horas y $((TIEMPO_LIMITE_MINUTOS % 60)) minutos para hoy."
         guardar_estado 0
     else
-        MINUTOS_USADOS=$(cut -d':' -f2 "$ARCHIVO_TIEMPO")
-        MINUTOS_RESTANTES=$((TIEMPO_LIMITE_MINUTOS - MINUTOS_USADOS))
-        echo "🔄 Sesión restaurada. Te quedan $((MINUTOS_RESTANTES / 60)) horas y $((MINUTOS_RESTANTES % 60)) minutos."
-        
-        # Verificar si ya se acabó el tiempo
-        if [ $MINUTOS_USADOS -ge $TIEMPO_LIMITE_MINUTOS ]; then
-            echo "$FECHA_ACTUAL" > "$ARCHIVO_BLOQUEO"
-            echo "⏰ Ya has agotado tu tiempo por hoy."
-            bloquear_sistema
-            mostrar_mensaje_fin
-            reproducir_video_final
-            sleep 30
-            sudo shutdown -h now
-            exit 0
+        FECHA_GUARDADA=$(cut -d':' -f1 "$ARCHIVO_TIEMPO")
+        if [ "$FECHA_GUARDADA" != "$FECHA_ACTUAL" ]; then
+            MINUTOS_USADOS=0
+            guardar_estado 0
+        else
+            MINUTOS_USADOS=$(cut -d':' -f2 "$ARCHIVO_TIEMPO")
         fi
     fi
     
-    # Loop principal de monitoreo
+    # Loop principal
     while true; do
-        # Verificar si cambió el día durante la sesión
+        # Verificar cambio de día
         if [ "$(date +%Y%m%d)" != "$FECHA_ACTUAL" ]; then
-            echo "🌅 Medianoche - Reiniciando contador para el nuevo día..."
             FECHA_ACTUAL=$(date +%Y%m%d)
             MINUTOS_USADOS=0
             rm -f "$ARCHIVO_BLOQUEO"
@@ -214,68 +305,54 @@ main() {
         MINUTOS_USADOS=$((MINUTOS_USADOS + 1))
         MINUTOS_RESTANTES=$((TIEMPO_LIMITE_MINUTOS - MINUTOS_USADOS))
         
-        # Guardar estado periódicamente
         guardar_estado $MINUTOS_USADOS
         
-        # Verificar si se acabó el tiempo
+        # ¿Tiempo agotado?
         if [ $MINUTOS_USADOS -ge $TIEMPO_LIMITE_MINUTOS ]; then
-            echo "⏰ ¡TIEMPO AGOTADO!"
+            echo "⏰ ¡TIEMPO AGOTADO! Bloqueando sistema..."
             echo "$FECHA_ACTUAL" > "$ARCHIVO_BLOQUEO"
             
-            # Mostrar advertencias
-            mostrar_mensaje_fin
+            # BLOQUEO TOTAL
+            bloquear_sistema_total
             
-            # Bloquear sistema
-            bloquear_sistema
+            # Cerrar TODO
+            pantalla_muerte
             
-            # Reproducir video
-            reproducir_video_final
+            # Video bloqueante
+            reproducir_video_bloqueante
             
-            # Tiempo para ver el mensaje
+            # Esperar y apagar
             sleep 30
-            
-            # Apagar sistema
-            echo "💀 Apagando sistema..."
             sudo shutdown -h now
             exit 0
         fi
         
-        # Mostrar advertencias
+        # Advertencias
         case $MINUTOS_RESTANTES in
-            60)
-                notify-send "⏰ 1 hora restante" "Te queda 1 hora de uso hoy." -t 10000 -u normal 2>/dev/null
-                echo "⚠️  Queda 1 hora de sesión."
+            60) 
+                notify-send "⏰ 1 hora restante" "Te queda 1 hora de uso." -t 10000 -u normal 2>/dev/null
                 ;;
-            30)
-                notify-send "⏰ 30 minutos" "Te quedan 30 minutos de uso." -t 10000 -u critical 2>/dev/null
-                echo "⚠️  Quedan 30 minutos."
+            30) 
+                notify-send "⏰ 30 minutos" "Te quedan 30 minutos." -t 10000 -u critical 2>/dev/null
                 ;;
-            15)
-                notify-send "🚨 15 minutos" "¡Solo te quedan 15 minutos!" -t 15000 -u critical 2>/dev/null
-                echo "🚨 ¡Solo quedan 15 minutos!"
+            15) 
+                notify-send "🚨 15 minutos" "¡Solo 15 minutos!" -t 15000 -u critical 2>/dev/null
                 ;;
-            5)
-                notify-send "🚨 ¡5 MINUTOS!" "¡La sesión está por terminar!" -t 20000 -u critical 2>/dev/null
-                echo "🚨 ¡ÚLTIMOS 5 MINUTOS!"
+            5) 
+                notify-send "🚨 5 MINUTOS" "¡Últimos 5 minutos! Guarda tu trabajo." -t 20000 -u critical 2>/dev/null
                 ;;
-            1)
-                notify-send "💀 ÚLTIMO MINUTO" "¡Guarda tu trabajo!" -t 30000 -u critical 2>/dev/null
-                echo "💀 ¡ÚLTIMO MINUTO!"
+            1) 
+                notify-send "💀 ÚLTIMO MINUTO" "¡Se apagará el sistema!" -t 30000 -u critical 2>/dev/null
                 ;;
         esac
         
-        # Mostrar tiempo cada 10 minutos
-        if [ $((MINUTOS_USADOS % 10)) -eq 0 ]; then
-            echo "⏱️  Tiempo restante: $((MINUTOS_RESTANTES / 60))h $((MINUTOS_RESTANTES % 60))m"
-        fi
-        
-        sleep 60  # Verificar cada minuto
+        sleep 60
     done
 }
 
-# Asegurar que el archivo de tiempo existe y tiene permisos correctos
+# Asegurar archivos
 sudo touch "$ARCHIVO_TIEMPO" 2>/dev/null
 sudo chmod 666 "$ARCHIVO_TIEMPO" 2>/dev/null
 
-# Ejecutar función principal
+# Ejecutar
 main
