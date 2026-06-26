@@ -1,0 +1,13 @@
+[Unit]
+Description=Ciber-Control Lockdown Watcher
+Documentation=https://github.com/anomalyco/opencode/issues
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/lockdown_watcher.sh <USER>
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

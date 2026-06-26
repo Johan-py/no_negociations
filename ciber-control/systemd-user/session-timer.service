@@ -1,0 +1,12 @@
+[Unit]
+Description=Ciber-Control Session Timer
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/session_timer.sh
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target
